@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Post Message</title>
+    <script>
+      async function sendMessage() {
+        const message = document.getElementById("messageInput").value;
+        const response = await fetch("/post", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ message }),
+        });
+        const result = await response.json();
+        document.getElementById("response").innerText = result.message;
+      }
+    </script>
+  </head>
+  <body>
+    <h1>Send a Message</h1>
+    <input type="text" id="messageInput" placeholder="Enter your message" />
+    <button onclick="sendMessage()">Send</button>
+    <h2>Response:</h2>
+    <p id="response"></p>
+  </body>
+</html>

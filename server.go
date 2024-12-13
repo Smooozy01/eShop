@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"path/filepath"
 )
 
 // Response structure to send back JSON responses
@@ -68,6 +69,11 @@ func HandleGet(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+func ServeStaticHTML(w http.ResponseWriter, r *http.Request) {
+	filePath := filepath.Join("static", "handlepost.html")
+	http.ServeFile(w, r, filePath)
+}
+
 func main() {
 	http.HandleFunc("/post", HandlePost)
 	http.HandleFunc("/get", HandleGet)
@@ -78,6 +84,8 @@ func main() {
 	http.HandleFunc("/hi", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Hi")
 	})
+
+	http.HandleFunc("/postmessage", ServeStaticHTML)
 
 	port := ":8080"
 	fmt.Println("Server is running on port" + port)
