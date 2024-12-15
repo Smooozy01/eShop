@@ -26,7 +26,7 @@ func testPost() {
 
 	// Create JSON data
 	data := request{
-		Message: "Lalalalal.",
+		Message: "Lalallal.",
 	}
 
 	// Serialize the data to JSON
