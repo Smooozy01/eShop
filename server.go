@@ -3,10 +3,19 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	_ "github.com/lib/pq"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 	"log"
 	"net/http"
 	"path/filepath"
 )
+
+type User struct {
+	gorm.Model
+	Name  string
+	Email string
+}
 
 // Response structure to send back JSON responses
 type Response struct {
@@ -75,6 +84,31 @@ func ServeStaticHTML(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+
+	// Connect database
+	dsn := "user=postgres password=root dbname=postgres sslmode=disable"
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	db.AutoMigrate(&User{})
+
+	// Create
+	db.Create(&User{Name: "Ismail", Email: "a@example.com"})
+
+	// Read
+	var user User
+	db.First(&user, 1)
+	log.Println(user)
+
+	// Update
+	db.Model(&user).Update("Name", "Ayupov")
+
+	// Delete
+	db.Delete(&user, 1)
+
+	// Run server
 	http.HandleFunc("/post", HandlePost)
 	http.HandleFunc("/get", HandleGet)
 
