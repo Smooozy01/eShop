@@ -94,20 +94,6 @@ func main() {
 
 	db.AutoMigrate(&User{})
 
-	// Create
-	db.Create(&User{Name: "Ismail", Email: "a@example.com"})
-
-	// Read
-	var user User
-	db.First(&user, 2)
-	log.Println(user)
-
-	// Update
-	db.Model(&user).Update("Name", "Ayupov")
-
-	// Delete
-	db.Delete(&user, 2)
-
 	// Run server
 	http.HandleFunc("/post", HandlePost)
 	http.HandleFunc("/get", HandleGet)
@@ -127,4 +113,25 @@ func main() {
 	// Start server on port specified above
 	log.Fatal(http.ListenAndServe(port, nil))
 
+}
+
+func createData(db *gorm.DB, name, email string) {
+	// Create
+	db.Create(&User{Name: name, Email: email})
+}
+
+func readData(db *gorm.DB, user *User) {
+	// Read
+	db.First(&user)
+	log.Println(user)
+}
+
+func updateData(db *gorm.DB, user *User) {
+	// Update
+	db.Model(&user).Update("Name", "Ayupov")
+}
+
+func deleteData(db *gorm.DB, user *User) {
+	// Delete
+	db.Delete(&user)
 }

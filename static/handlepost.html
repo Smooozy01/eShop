@@ -13,7 +13,7 @@
           body: JSON.stringify({ message }),
         });
         const result = await response.json();
-        document.getElementById("response").innerText = result.message;
+        document.getElementById("response").innerText = JSON.stringify(result, null, 2);
       }
     </script>
   </head>
