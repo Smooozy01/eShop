@@ -99,14 +99,14 @@ func main() {
 
 	// Read
 	var user User
-	db.First(&user, 1)
+	db.First(&user, 2)
 	log.Println(user)
 
 	// Update
 	db.Model(&user).Update("Name", "Ayupov")
 
 	// Delete
-	db.Delete(&user, 1)
+	db.Delete(&user, 2)
 
 	// Run server
 	http.HandleFunc("/post", HandlePost)
