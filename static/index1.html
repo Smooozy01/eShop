@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>BMI Calculator</title>
+        <link rel="stylesheet" href="styles.css">
+    </head>
+    <body>
+        <div class="container">
+            <h1>BMI Calculator</h1>
+            <input type="text" id="weight" placeholder="Enter your weight">
+            <input type="text" id="height" placeholder="Enter your height">
+            <button onclick="sendMessages()">Send</button>
+            <div id="bmiResponse" class="response" style="display: none"></div>
+        </div>
+        <script>
+            function sendMessages() {
+                const weight = document.getElementById('weight').value;
+                const height = document.getElementById('height').value;
+    
+                function isNum(value) { return !isNaN(Number(value)); }
+                
+                if (!isNum(weight) || !isNum(height) || weight < 0 || height < 0) {
+                    const responseDiv = document.getElementById('bmiResponse');
+                    responseDiv.style.display = 'block';
+                    
+                    if (!isNum(weight) || weight < 0){
+                        responseDiv.textContent = "Enter correct weight";
+                    }
+                    else {
+                        responseDiv.textContent = "Enter correct height";
+                    }                
+                    return;
+                }
+                
+                function bmiCategory(bmi) {
+                    if (bmi < 18.5) {
+                        return "Underweight";
+                    } else if (bmi < 25) {
+                        return "Normal weight";
+                    } else if (bmi < 30) {
+                        return "Overweight";
+                    } else {
+                        return "Obese";
+                    }
+                }
+    
+                function bmiColor(bmi) {
+                    if (bmi < 18.5) {
+                        return "darkgray";
+                    } else if (bmi < 25) {
+                        return "chartreuse";
+                    } else if (bmi < 30) {
+                        return "gold";
+                    } else {
+                        return "tomato";
+                    }
+                }
+                
+                fetch('/calculate-bmi', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ weight: weight, height: height })
+                }).then(response => response.json())
+                    .then(data => {
+                        const responseDiv = document.getElementById('bmiResponse');
+                        responseDiv.style.display = 'block';
+                        responseDiv.textContent = "Your BMI is: " + parseFloat(data.response).toFixed(1) + ` (${bmiCategory(data.response)})`;
+                        responseDiv.style.backgroundColor = bmiColor(data.response);
+                    })
+                    .catch(error => {
+                        console.error('Error:', error)
+                        const responseDiv = document.getElementById('bmiResponse');
+                        responseDiv.style.display = 'block';
+                        responseDiv.textContent = "Error: " + error;
+                    });
+            }
+        </script>
+    </body>
+</html>

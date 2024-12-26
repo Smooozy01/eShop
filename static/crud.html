@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CRUD Operations</title>
+    <script>
+        async function handleRequest(action) {
+            const name = document.getElementById("nameInput").value;
+            const email = document.getElementById("emailInput").value;
+
+            let url = "/";
+            let method = "GET";
+            let body = null;
+
+            // Configure request based on the action
+            switch (action) {
+                case "create":
+                    url = "/crud";
+                    method = "POST";
+                    body = JSON.stringify({ id: name, message: email });
+                    break;
+                case "read":
+                    url = `/crud?id=${name}`;
+                    method = "GET";
+                    break;
+                case "update":
+                    url = "/crud";
+                    method = "PUT";
+                    body = JSON.stringify({ id: name, message: email });
+                    break;
+                case "delete":
+                    url = "/crud";
+                    method = "DELETE";
+                    body = JSON.stringify({ id: name });
+                    break;
+            }
+
+            try {
+                const response = await fetch(url, {
+                    method,
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body,
+                });
+
+                const result = await response.json();
+                document.getElementById("response").innerText = JSON.stringify(result, null, 2);
+            } catch (error) {
+                document.getElementById("response").innerText = "Error: " + error.message;
+            }
+        }
+    </script>
+</head>
+<body>
+<h1>CRUD Operations</h1>
+
+<div>
+    <label for="nameInput">Name:</label>
+    <input type="text" id="nameInput" placeholder="Enter ID" />
+</div>
+
+<div>
+    <label for="emailInput">Email:</label>
+    <input type="text" id="emailInput" placeholder="Enter Message" />
+</div>
+
+<div>
+    <button onclick="handleRequest('create')">Create</button>
+    <button onclick="handleRequest('read')">Read</button>
+    <button onclick="handleRequest('update')">Update</button>
+    <button onclick="handleRequest('delete')">Delete</button>
+</div>
+
+<h2>Response:</h2>
+<pre id="response"></pre>
+</body>
+</html>

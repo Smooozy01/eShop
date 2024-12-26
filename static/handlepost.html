@@ -1,27 +1,88 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Post Message</title>
-    <script>
-      async function sendMessage() {
-        const message = document.getElementById("messageInput").value;
-        const response = await fetch("/post", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ message }),
-        });
-        const result = await response.json();
-        document.getElementById("response").innerText = JSON.stringify(result, null, 2);
-      }
-    </script>
-  </head>
-  <body>
-    <h1>Send a Message</h1>
-    <input type="text" id="messageInput" placeholder="Enter your message" />
-    <button onclick="sendMessage()">Send</button>
-    <h2>Response:</h2>
-    <p id="response"></p>
-  </body>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Crud operations</title>
+        <link rel="stylesheet" href="styles.css">
+    </head>
+    <body>
+        <div class="container">
+            <h1>Enter a user</h1>
+            <input type="text" id="name" placeholder="Enter a name">
+            <input type="text" id="email" placeholder="Enter an email">
+            <input type="text" id="ID" placeholder="Enter an ID">
+            <button onclick="sendMessage('create')">Create</button>
+            <button onclick="sendMessage('read')">Read</button>
+            <button onclick="sendMessage('update')">Update</button>
+            <button onclick="sendMessage('delete')">Delete</button>
+            <button onclick="sendMessage('getRecords')">Get all records</button>
+            <div id="response" class="response" style="display: none"></div>
+        </div>
+        <script>
+            async function sendMessage(method) {
+                const name = document.getElementById("name").value;
+                const email = document.getElementById("email").value;
+                const id = document.getElementById("ID").value;
+                
+                const response = await fetch("/post", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({name: name, email: email, method: method, id: parseInt(id)}),
+                });
+                
+                if(!response.ok) {
+                    document.getElementById("response").style.display = "block";
+                    document.getElementById("response").textContent = "Error sending message";
+                    console.log(response.status);
+                    console.log(await response.text());
+                    return;
+                }
+                
+                try {
+                    const data = await response.json();
+                    console.log(data);
+                    const responseDiv = document.getElementById('response');
+                    
+                    if (data == "Failed to read user"){
+                        responseDiv.style.display = 'block';
+                        responseDiv.textContent = `User doesn't exist`;
+                    }          
+                    else if (data == "Successfully created user"){
+                        responseDiv.style.display = 'block';
+                        responseDiv.textContent = `Successfully created user`;
+                    }
+                    else if (data == "Successfully updated user"){
+                        responseDiv.style.display = 'block';
+                        responseDiv.textContent = `Successfully updated user`;
+                    }
+                    else if (data == "Failed to update user"){
+                        responseDiv.style.display = 'block';
+                        responseDiv.textContent = `Failed to update user`;
+                    }
+                    else if (data == "Successfully deleted user"){
+                        responseDiv.style.display = 'block';
+                        responseDiv.textContent = `Successfully deleted user`;
+                    }
+                    else if (data == "Failed to delete user"){
+                        responseDiv.style.display = 'block';
+                        responseDiv.textContent = `Failed to delete user`;
+                    }
+                    else{
+                        responseDiv.style.display = 'block';
+                        if (data.length == 1){
+                            responseDiv.textContent = `${data[0].name} ${data[0].email}`;
+                        } else{
+                            const records = data.map(record => `${record.id} ${record.name} ${record.email}`).join('<br>');
+                            responseDiv.innerHTML = records;
+                        }
+                    }
+                } catch (error){
+                    console.error("Error parsing website", error);
+                }
+            }
+        </script>
+    </body>
 </html>
